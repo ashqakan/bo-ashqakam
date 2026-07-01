@@ -10,12 +10,22 @@
             padding: 0;
             background: #070005;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            overflow: hidden;
-            color: white;
+        }
+
+        /* کەنڤاسەکە هەموو شاشەکە دادەپۆشێت */
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
         }
 
         .container {
@@ -27,6 +37,7 @@
         h2 {
             font-size: 24px;
             margin-bottom: 25px;
+            color: white;
             text-shadow: 0 0 10px rgba(255, 20, 147, 0.5);
         }
 
@@ -41,158 +52,170 @@
             cursor: pointer;
             box-shadow: 0 0 15px rgba(255, 20, 147, 0.4);
             transition: transform 0.2s;
+            pointer-events: auto;
         }
 
         .btn:hover {
             transform: scale(1.05);
         }
-
-        /* بەشی دەقەکان - ئۆپتیمایزکراوی تەواو */
-        .love-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            font-weight: bold;
-            pointer-events: none;
-            white-space: nowrap;
-            opacity: 0;
-            /* بەکارهێنانی translate3d بۆ ڕەوانەکردنی فەرمانەکان بۆ کارتی شاشە */
-            transform: translate3d(-50%, -50%, 0) scale(0);
-            will-change: transform, opacity;
-            animation: explodeSuperFast 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            z-index: 10;
-        }
-
-        @keyframes explodeSuperFast {
-            0% {
-                transform: translate3d(-50%, -50%, 0) scale(0.2);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            100% {
-                transform: translate3d(var(--tx), var(--ty), 0) scale(1) rotate(var(--rot));
-                opacity: 0.95;
-            }
-        }
-
-        /* بارانی پشتەوەی زۆر سووک */
-        .background-element {
-            position: absolute;
-            top: -20px;
-            pointer-events: none;
-            will-change: transform;
-            animation: fall var(--fall-duration) linear infinite;
-            opacity: var(--opacity);
-            z-index: 1;
-        }
-
-        @keyframes fall {
-            0% { transform: translate3d(0, -20px, 0) rotate(0deg); }
-            100% { transform: translate3d(var(--drift), 105vh, 0) rotate(180deg); }
-        }
-
-        .center-message {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate3d(-50%, -50%, 0) scale(0.8);
-            font-size: 22px;
-            font-weight: bold;
-            color: #ffffff;
-            text-shadow: 0 0 15px #ff1493;
-            opacity: 0;
-            z-index: 50;
-            pointer-events: none;
-            text-align: center;
-            line-height: 1.6;
-            transition: opacity 1s ease, transform 1s ease;
-        }
-
-        .center-message.show {
-            opacity: 1;
-            transform: translate3d(-50%, -50%, 0) scale(1);
-        }
     </style>
 </head>
 <body>
+
+    <canvas id="loveCanvas"></canvas>
 
     <div class="container" id="mainContainer">
         <h2>کلیک لەم دوگمەیە بکە، شاهانەکەم.. ✨❤️</h2>
         <button class="btn" onclick="startRomanticWorld()">بۆ تۆ کلیک بکە</button>
     </div>
 
-    <div class="center-message" id="romanticMessage">
-        تۆ مانگی منی.. 🌙<br>
-        هەموو دنیای من لە ناو دڵی تۆدایە! 💖
-    </div>
-
     <script>
-        // بارانی پشتەوەی زۆر سووک کراو بۆ ئەوەی ڕام داگیر نەکات
-        function createBackgroundRain() {
-            const elements = ['✨', '💖', '❤️'];
-            setInterval(() => {
-                if (document.querySelectorAll('.background-element').length > 10) return;
+        const canvas = document.getElementById('loveCanvas');
+        const ctx = canvas.getContext('2d');
 
-                const el = document.createElement('div');
-                el.classList.add('background-element');
-                el.innerText = elements[Math.floor(Math.random() * elements.length)];
+        // ڕێکخستنی قەبارەی کەنڤاس بەپێی شاشەکە
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        let particles = [];
+        let showCenterText = false;
+        let centerTextAlpha = 0;
+        let animationActive = false;
+
+        const phrases = ['خۆشم دەوێیت', 'تۆ ژیانی منی', 'I Love You', 'هەناسەکەم', 'تاقانەکەم', '💖'];
+        const colors = ['#ff1493', '#ff69b4', '#ff0055', '#ffffff'];
+
+        // پۆلێنکردنی هەر تەنۆکەیەک (وشەیەک)
+        class Particle {
+            constructor(targetX, targetY) {
+                this.x = canvas.width / 2;
+                this.y = canvas.height / 2;
+                this.targetX = targetX;
+                this.targetY = targetY;
+                this.text = phrases[Math.floor(Math.random() * phrases.length)];
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+                this.fontSize = Math.floor(Math.random() * 4) + 15;
+                this.alpha = 0;
+                this.speed = 0.04 + Math.random() * 0.02; // خێرایی جوڵە
+                this.angle = (Math.random() - 0.5) * 0.2; // کەمێک لاربونەوە
+            }
+
+            update() {
+                // بەرەو ئامانج دەچێت بە هێواشی و نەرمی (Lerp)
+                this.x += (this.targetX - this.x) * this.speed;
+                this.y += (this.targetY - this.y) * this.speed;
                 
-                el.style.left = Math.random() * window.innerWidth + 'px';
-                el.style.setProperty('--fall-duration', (Math.random() * 3 + 5) + 's');
-                el.style.setProperty('--opacity', Math.random() * 0.3 + 0.1);
-                el.style.setProperty('--drift', (Math.random() * 60 - 30) + 'px');
-                el.style.fontSize = '12px';
+                if (this.alpha < 1) this.alpha += 0.05;
+            }
 
-                document.body.appendChild(el);
-                setTimeout(() => el.remove(), 7000);
-            }, 800);
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle);
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = this.color;
+                ctx.font = `bold ${this.fontSize}px 'Segoe UI', Tahoma`;
+                ctx.textAlign = 'center';
+                ctx.fillText(this.text, 0, 0);
+                ctx.restore();
+            }
         }
 
-        createBackgroundRain();
+        // بەشی پشتەوە (بارانی دڵەکان پێش کلیک کردن)
+        let rainParticles = [];
+        function updateBackgroundRain() {
+            if (!animationActive && Math.random() < 0.1 && rainParticles.length < 15) {
+                rainParticles.push({
+                    x: Math.random() * canvas.width,
+                    y: -20,
+                    text: ['✨', '💖', '❤️'][Math.floor(Math.random() * 3)],
+                    speed: Math.random() * 1.5 + 1,
+                    alpha: Math.random() * 0.3 + 0.1
+                });
+            }
+
+            rainParticles.forEach((p, index) => {
+                p.y += p.speed;
+                if (p.y > canvas.height) rainParticles.splice(index, 1);
+                
+                ctx.save();
+                ctx.globalAlpha = p.alpha;
+                ctx.font = "14px 'Segoe UI'";
+                ctx.fillStyle = "#ff69b4";
+                ctx.fillText(p.text, p.x, p.y);
+                ctx.restore();
+            });
+        }
+
+        // ئەنیمەیشن لووپ (سەرەکی)
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // نوێکردنەوەی بارانی پشتەوە
+            updateBackgroundRain();
+
+            // نوێکردنەوەی دڵە گەورەکە
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            // نیشاندانی دەقی ناوەڕاست بە نەرمی
+            if (showCenterText) {
+                if (centerTextAlpha < 1) centerTextAlpha += 0.01;
+                ctx.save();
+                ctx.globalAlpha = centerTextAlpha;
+                ctx.fillStyle = '#ffffff';
+                ctx.font = "bold 22px 'Segoe UI'";
+                ctx.textAlign = 'center';
+                ctx.shadowColor = '#ff1493';
+                ctx.shadowBlur = 10;
+                ctx.fillText('تۆ مانگی منی.. 🌙', canvas.width / 2, canvas.height / 2 - 15);
+                ctx.fillText('هەموو دنیای من لە ناو دڵی تۆدایە! 💖', canvas.width / 2, canvas.height / 2 + 20);
+                ctx.restore();
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        // دەستپێکردنی لووپەکە لە سەرەتاوە بۆ بارانی پشتەوە
+        animate();
 
         function startRomanticWorld() {
+            animationActive = true;
+            rainParticles = []; // لادانی بارانەکە بۆ چۆڵکردنی شاشەکە
+
+            // شاردنەوەی دوگمەکە
             const container = document.getElementById('mainContainer');
             container.style.opacity = '0';
             setTimeout(() => container.style.display = 'none', 400);
 
+            // نیشاندانی دەقی ناوەڕاست دوای ٢ چرکە
             setTimeout(() => {
-                document.getElementById('romanticMessage').classList.add('show');
-            }, 1400);
+                showCenterText = true;
+            }, 2000);
 
-            const totalTexts = 90; // ژمارەیەکی گونجاو بۆ دروستکردنی دڵێکی ڕێک بێ ئەوەی لاگ بکات
-            const fragment = document.createDocumentFragment();
+            const totalTexts = 120; 
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const r = canvas.width < 600 ? 11 : 18; // گونجاندن بۆ مۆبایل
 
             for (let i = 0; i < totalTexts; i++) {
-                const textNode = document.createElement('div');
-                textNode.classList.add('love-text');
-                
-                const romanticPhrases = ['خۆشم دەوێیت', 'تۆ ژیانی منی', 'I Love You', 'هەناسەکەم', 'تاقانەکەم', '💖'];
-                textNode.innerText = romanticPhrases[Math.floor(Math.random() * romanticPhrases.length)];
-
                 const angle = (i / totalTexts) * 2 * Math.PI;
-                const r = window.innerWidth < 600 ? 11 : 18; 
                 
-                // لێرەدا لادانی (Offset) ناوەڕاست حیساب دەکەین لە جیاتی Absolute top/left
-                const x = r * 16 * Math.pow(Math.sin(angle), 3);
-                const y = -r * (13 * Math.cos(angle) - 5 * Math.cos(2 * angle) - 2 * Math.cos(3 * angle) - Math.cos(4 * angle));
+                // هاوکێشەی دڵ
+                const x = centerX + r * 16 * Math.pow(Math.sin(angle), 3);
+                const y = centerY - r * (13 * Math.cos(angle) - 5 * Math.cos(2 * angle) - 2 * Math.cos(3 * angle) - Math.cos(4 * angle));
 
-                // بەکارهێنانی نیشاندەرەکانی لادان لە ناو transform
-                textNode.style.setProperty('--tx', `calc(-50% + ${x}px)`);
-                textNode.style.setProperty('--ty', `calc(-50% + ${y}px)`);
-                textNode.style.setProperty('--rot', `${(Math.random() - 0.5) * 15}deg`);
-                textNode.style.animationDelay = `${Math.random() * 0.3}s`;
-
-                textNode.style.fontSize = `${Math.floor(Math.random() * 4) + 15}px`;
-
-                const colors = ['#ff1493', '#ff69b4', '#ff0055', '#ffffff'];
-                textNode.style.color = colors[Math.floor(Math.random() * colors.length)];
-
-                fragment.appendChild(textNode);
+                // دروستکردنی پارتیکڵەکان و پاشەکەوتکردنیان
+                setTimeout(() => {
+                    particles.push(new Particle(x, y));
+                }, Math.random() * 600); // بڵاوبوونەوە بە ڕیتمێکی نەرم لە ناو کاتدا
             }
-
-            document.body.appendChild(fragment);
         }
     </script>
 </body>
