@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بۆ خۆشەویستەکەم</title>
+    <style>
+        /* ستایلی گشتی پەڕەکە */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0d0d0d;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            color: white;
+            text-align: center;
+        }
+
+        /* بەشی ناوەڕۆکی سەرەتا */
+        .container {
+            z-index: 10;
+            transition: opacity 0.5s ease;
+        }
+
+        h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(255, 20, 147, 0.5);
+        }
+
+        /* ستایلی دوگمەکە */
+        .btn {
+            background-color: #ff1493;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 18px;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 20, 147, 0.4);
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #ff69b4;
+            transform: scale(1.05);
+        }
+
+        /* ستایلی ئەو دەقانەی کە دەتەقنەوە */
+        .love-text {
+            position: absolute;
+            color: #ff69b4;
+            font-weight: bold;
+            font-size: 16px;
+            pointer-events: none;
+            white-space: nowrap;
+            text-shadow: 0 0 5px rgba(255, 20, 147, 0.8);
+            opacity: 0;
+            transform: translate(-50%, -50%);
+            animation: explode 3s forwards ease-out;
+        }
+
+        /* ئەنیمەیشنی تەقینەوە و دروستکردنی دڵ */
+        @keyframes explode {
+            0% {
+                top: 50%;
+                left: 50%;
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            10% {
+                opacity: 1;
+            }
+            80% {
+                opacity: 1;
+            }
+            100% {
+                /* لێرەدا کۆدەکان دەچنە سەر ئەو شوێنەی (X, Y) کە بە جی ڤContinuous دیاری کراوە */
+                top: var(--target-y);
+                left: var(--target-x);
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="mainContainer">
+        <h2>کلیک لەمەی خوارەوە بکە خۆشەویستم.. 💖</h2>
+        <button class="btn" onclick="startAnimation()">کلیک بکە</button>
+    </div>
+
+    <script>
+        function startAnimation() {
+            // شاردنەوەی دوگمە و دەقی سەرەتا
+            document.getElementById('mainContainer').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('mainContainer').style.display = 'none';
+            }, 500);
+
+            const totalTexts = 120; // ژمارەی ئەو دەقانەی دروست دەبن
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+
+            for (let i = 0; i < totalTexts; i++) {
+                // دروستکردنی توخمێکی نوێ بۆ دەقەکە
+                const textNode = document.createElement('div');
+                textNode.classList.add('love-text');
+                textNode.innerText = 'خۆشم دەوێیت'; // دەتوانیت بیگۆڕیت بۆ "I Love You"
+
+                // هاوکێشەی ماتماتیکی بۆ دروستکردنی شێوەی دڵ (Heart Curve)
+                const angle = (i / totalTexts) * 2 * Math.PI;
+                
+                // هاوکێشەی دڵی بەناوبانگ پارامیتری
+                const r = 15; // قەبارەی دڵەکە
+                const x = centerX + r * 16 * Math.pow(Math.sin(angle), 3);
+                const y = centerY - r * (13 * Math.cos(angle) - 5 * Math.cos(2 * angle) - 2 * Math.cos(3 * angle) - Math.cos(4 * angle));
+
+                // ناردنی شوێنی کۆتایی بۆ ناو CSS
+                textNode.style.setProperty('--target-x', `${x}px`);
+                textNode.style.setProperty('--target-y', `${y}px`);
+
+                // گۆڕینی ڕەنگەکان بە شێوەیەکی هەڕەمەکی لە نێوان پەمەیی و سوور
+                const colors = ['#ff1493', '#ff69b4', '#ff0000', '#ffc0cb'];
+                textNode.style.color = colors[Math.floor(Math.random() * colors.length)];
+                
+                // پێدانی کاتێکی جیاواز بۆ دەستپێکردنی ئەنیمەیشنەکە بۆ ئەوەی سروشتی تر دەرکەوێت
+                textNode.style.animationDelay = `${Math.random() * 0.5}s`;
+
+                document.body.appendChild(textNode);
+            }
+        }
+    </script>
+</body>
+</html>
