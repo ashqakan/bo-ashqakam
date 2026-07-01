@@ -3,15 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بۆ خۆشەویستەکەم 💖</title>
+    <title>بۆ تاقانەکەی دڵم 💖</title>
     <style>
-        /* --- بەشی سی ئێس ئێس (CSS) --- */
-        
-        /* ستایلی گشتی پەڕەکە */
+        /* ستایلی گشتی */
         body {
             margin: 0;
             padding: 0;
-            background-color: #050505; /* ڕەشێکی تۆخ بۆ دیارکەوتنی ڕەنگەکان */
+            background: radial-gradient(circle, #1a000d 0%, #050005 100%);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             justify-content: center;
@@ -21,38 +19,53 @@
             color: white;
         }
 
-        /* ناوەڕۆکی سەرەتا (دوگمە و دەقەکە) */
+        /* بەشی ناوەڕۆکی سەرەتا */
         .container {
-            z-index: 10;
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100;
             text-align: center;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         h2 {
-            font-size: 26px;
-            margin-bottom: 25px;
-            text-shadow: 0 0 15px rgba(255, 20, 147, 0.6);
+            font-size: 28px;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+            text-shadow: 0 0 20px rgba(255, 20, 147, 0.8);
+            animation: pulseText 2s infinite alternate;
         }
 
-        /* ستایلی دوگمەکە */
+        @keyframes pulseText {
+            0% { transform: scale(1); opacity: 0.9; }
+            100% { transform: scale(1.03); opacity: 1; }
+        }
+
+        /* دوگمە ڕۆمانسیەکە */
         .btn {
-            background: linear-gradient(45deg, #ff1493, #ff69b4);
+            background: linear-gradient(45deg, #ff1493, #ff69b4, #ff0055);
+            background-size: 200% auto;
             color: white;
             border: none;
-            padding: 14px 35px;
-            font-size: 18px;
-            border-radius: 30px;
+            padding: 16px 45px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 5px 20px rgba(255, 20, 147, 0.4);
-            transition: all 0.3s ease;
+            box-shadow: 0 0 25px rgba(255, 20, 147, 0.6);
+            transition: all 0.4s ease;
+            animation: buttonGlow 3s infinite;
+        }
+
+        @keyframes buttonGlow {
+            0% { background-position: 0% 50%; box-shadow: 0 0 20px rgba(255, 20, 147, 0.5); }
+            50% { background-position: 100% 50%; box-shadow: 0 0 35px rgba(255, 20, 147, 0.9); }
+            100% { background-position: 0% 50%; box-shadow: 0 0 20px rgba(255, 20, 147, 0.5); }
         }
 
         .btn:hover {
-            transform: scale(1.08);
-            box-shadow: 0 8px 25px rgba(255, 20, 147, 0.7);
+            transform: scale(1.1) translateY(-3px);
         }
 
-        /* ستایلی ئەو دەقانەی کە دەتەقنەوە و دڵەکە دروست دەکەن */
+        /* دەقە ئەنیمەیشنەکان */
         .love-text {
             position: absolute;
             font-weight: bold;
@@ -60,65 +73,134 @@
             white-space: nowrap;
             opacity: 0;
             transform: translate(-50%, -50%) scale(0);
-            /* لێرەدا دوو ئەنیمەیشن بەکاردێنین: یەکەم بۆ تەقینەوەکە، دووەم بۆ لەرینەوەی دڵەکە */
-            animation: explode 2.5s cubic-bezier(0.25, 1, 0.5, 1) forwards, 
-                       float 3s ease-in-out infinite alternate;
-            animation-delay: var(--delay), calc(var(--delay) + 2.5s);
+            animation: explode 3s cubic-bezier(0.1, 1, 0.1, 1) forwards, 
+                       floatAround 4s ease-in-out infinite alternate;
+            animation-delay: var(--delay), calc(var(--delay) + 3s);
+            z-index: 10;
         }
 
-        /* ئەنیمەیشنی یەکەم: بڵاوبوونەوە و دروستکردنی دڵەکە وەک ناو ڤیدیۆکە */
         @keyframes explode {
             0% {
                 top: 50%;
                 left: 50%;
                 opacity: 0;
-                transform: translate(-50%, -50%) scale(0.3) rotate(0deg);
-                filter: blur(5px);
+                transform: translate(-50%, -50%) scale(0.1) rotate(0deg);
+                filter: blur(8px);
             }
-            15% {
+            20% {
                 opacity: 1;
                 filter: blur(0px);
             }
             100% {
                 top: var(--target-y);
                 left: var(--target-x);
-                opacity: 1;
+                opacity: 0.9;
                 transform: translate(-50%, -50%) scale(1) rotate(var(--rot));
             }
         }
 
-        /* ئەنیمەیشنی دووەم: لەرینەوەی نەرم بۆ ئەوەی دڵەکە زیندوو دەرکەوێت */
-        @keyframes float {
-            0% {
-                transform: translate(-50%, -50%) scale(1) translate(0, 0);
-            }
-            100% {
-                transform: translate(-50%, -50%) scale(1.05) translate(var(--float-x), var(--float-y));
-            }
+        @keyframes floatAround {
+            0% { transform: translate(-50%, -50%) scale(1) translate(0, 0) rotate(var(--rot)); }
+            100% { transform: translate(-50%, -50%) scale(1.06) translate(var(--float-x), var(--float-y)) rotate(calc(var(--rot) + 5deg)); }
+        }
+
+        /* بارانی ئەستێرە و دڵ لە پاشبنەما */
+        .background-element {
+            position: absolute;
+            position: absolute;
+            top: -20px;
+            pointer-events: none;
+            animation: fall var(--fall-duration) linear infinite;
+            opacity: var(--opacity);
+            z-index: 1;
+        }
+
+        @keyframes fall {
+            0% { top: -20px; transform: translateX(0) rotate(0deg); }
+            100% { top: 105vh; transform: translateX(var(--drift)) rotate(360deg); }
+        }
+
+        /* نامەی ناوەڕاستی دڵەکە */
+        .center-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.5);
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 0 0 20px #ff1493, 0 0 40px #ff0055;
+            opacity: 0;
+            z-index: 50;
+            pointer-events: none;
+            text-align: center;
+            line-height: 1.6;
+            transition: all 2s ease-in-out;
+        }
+
+        .center-message.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
         }
     </style>
 </head>
 <body>
 
-    <!-- --- بەشی ئێچ تی ئێم ئێڵ (HTML) --- -->
+    <audio id="loveMusic" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mp3">
+    </audio>
+
     <div class="container" id="mainContainer">
-        <h2>کلیک لەمەی خوارەوە بکە خۆشەویستم.. ✨</h2>
-        <button class="btn" onclick="startAnimation()">کلیک بکە</button>
+        <h2>کلیک لەم دوگمەیە بکە، شاهانەکەم.. ✨❤️</h2>
+        <button class="btn" onclick="startRomanticWorld()">بۆ تۆ کلیل بکە</button>
     </div>
 
-    <!-- --- بەشی جەی ئێس (JavaScript) --- -->
+    <div class="center-message" id="romanticMessage">
+        تۆ مانگی منی.. 🌙<br>
+        هەموو دنیای من لە ناو دڵی تۆدایە! 💖
+    </div>
+
     <script>
-        function startAnimation() {
-            // ونکردنی دوگمەکە بە نەرمی کاتێک کلیکی لێدەکرێت
+        // دروستکردنی بارانی پشتەوە بە بەردەوامی
+        function createBackgroundRain() {
+            const elements = ['✨', '💖', '❤️', '🌸', '⭐'];
+            setInterval(() => {
+                const el = document.createElement('div');
+                el.classList.add('background-element');
+                el.innerText = elements[Math.floor(Math.random() * elements.length)];
+                
+                el.style.left = Math.random() * window.innerWidth + 'px';
+                el.style.setProperty('--fall-duration', (Math.random() * 4 + 4) + 's');
+                el.style.setProperty('--opacity', Math.random() * 0.5 + 0.2);
+                el.style.setProperty('--drift', (Math.random() * 100 - 50) + 'px');
+                el.style.fontSize = (Math.random() * 15 + 10) + 'px';
+
+                document.body.appendChild(el);
+
+                setTimeout(() => el.remove(), 8000);
+            }, 300);
+        }
+
+        // دەستپێکردنی باران لەگەڵ باربوونی پەڕەکە
+        createBackgroundRain();
+
+        function startRomanticWorld() {
+            // لێدانی مۆسیقا
+            const music = document.getElementById('loveMusic');
+            music.play().catch(() => console.log("مۆسیقا پێویستی بە مۆڵەتی زیاتر هەیە"));
+
+            // ونکردنی دوگمەکە
             const container = document.getElementById('mainContainer');
             container.style.opacity = '0';
-            container.style.transform = 'scale(0.8)';
-            
-            setTimeout(() => {
-                container.style.display = 'none';
-            }, 600);
+            container.style.transform = 'scale(0.5)';
+            setTimeout(() => container.style.display = 'none', 800);
 
-            const totalTexts = 150; // ژمارەی دەقەکان بۆ ئەوەی دڵەکە پڕ و جوان بێت
+            // نیشاندانی نامە ڕۆمانسیەکەی ناوەڕاست دوای کەمێک
+            setTimeout(() => {
+                document.getElementById('romanticMessage').classList.add('show');
+            }, 2500);
+
+            const totalTexts = 250; // زیادکردنی ژمارەی دەقەکان بۆ زۆرترین پڕی
             const centerX = window.innerWidth / 2;
             const centerY = window.innerHeight / 2;
 
@@ -126,40 +208,41 @@
                 const textNode = document.createElement('div');
                 textNode.classList.add('love-text');
                 
-                // ئەو وشانەی کە بە هەڕەمەکی تێکەڵ دەبن
-                const phrases = ['خۆشم دەوێیت', 'I Love You', 'گیانەکەم', '💖'];
-                textNode.innerText = phrases[Math.floor(Math.random() * phrases.length)];
+                // وشە و ڕستەی زۆر ڕۆمانسی
+                const romanticPhrases = [
+                    'خۆشم دەوێیت', 'تۆ ژیانی منی', 'I Love You', 'هەناسەکەم', 
+                    'تاقانەکەم', '💖', '💘', 'بۆ هەمیشە', 'دڵەکەم', 'My Queen'
+                ];
+                textNode.innerText = romanticPhrases[Math.floor(Math.random() * romanticPhrases.length)];
 
-                // هاوکێشەی ماتماتیکی دڵ
+                // هاوکێشەی دڵ
                 const angle = (i / totalTexts) * 2 * Math.PI;
-                const r = window.innerWidth < 600 ? 10 : 16; // گونجاندنی قەبارە بۆ مۆبایل و کۆمپیوتەر
+                // گەورەکردنی قەبارەی دڵەکە بۆ ئەوەی دنیایەک شتی تێدا جێبێتەوە
+                const r = window.innerWidth < 600 ? 14 : 22; 
                 
                 const x = centerX + r * 16 * Math.pow(Math.sin(angle), 3);
                 const y = centerY - r * (13 * Math.cos(angle) - 5 * Math.cos(2 * angle) - 2 * Math.cos(3 * angle) - Math.cos(4 * angle));
 
-                // ناردنی گۆڕاوەکان بۆ ناو CSS
                 textNode.style.setProperty('--target-x', `${x}px`);
                 textNode.style.setProperty('--target-y', `${y}px`);
                 
-                // کاتی دەستپێکردنی جیاواز بۆ دروستکردنی جوڵەی شەپۆلی نەرم
-                textNode.style.setProperty('--delay', `${Math.random() * 0.8}s`);
-                
-                // خولانەوەی دەقەکان بۆ شێوەیەکی سروشتی تر
-                textNode.style.setProperty('--rot', `${(Math.random() - 0.5) * 20}deg`);
+                // کاتی جیاواز بۆ دروستکردنی شەپۆلێکی تەواو سیحراوی
+                textNode.style.setProperty('--delay', `${Math.random() * 1.5}s`);
+                textNode.style.setProperty('--rot', `${(Math.random() - 0.5) * 25}deg`);
 
-                // جوڵەی لەرینەوەی هەڕەمەکی
-                textNode.style.setProperty('--float-x', `${(Math.random() - 0.5) * 15}px`);
-                textNode.style.setProperty('--float-y', `${(Math.random() - 0.5) * 15}px`);
+                // جوڵەی نەرمی لەرینەوەی زیاتر
+                textNode.style.setProperty('--float-x', `${(Math.random() - 0.5) * 25}px`);
+                textNode.style.setProperty('--float-y', `${(Math.random() - 0.5) * 25}px`);
 
-                // قەبارەی جیاواز بۆ دەقەکان
-                const fontSize = Math.floor(Math.random() * 6) + 14; 
+                // تێکەڵکردنی قەبارەکان
+                const fontSize = Math.floor(Math.random() * 8) + 12; 
                 textNode.style.fontSize = `${fontSize}px`;
 
-                // ڕەنگە درەوشاوەکان (Glow Effect)
-                const colors = ['#ff1493', '#ff69b4', '#ff0055', '#ff33aa', '#ffffff'];
+                // ڕەنگە شاهانەییەکان
+                const colors = ['#ff1493', '#ff69b4', '#ff0055', '#ff33aa', '#ffffff', '#ffe4e1'];
                 const randomColor = colors[Math.floor(Math.random() * colors.length)];
                 textNode.style.color = randomColor;
-                textNode.style.textShadow = `0 0 8px ${randomColor}, 0 0 15px rgba(255, 20, 147, 0.5)`;
+                textNode.style.textShadow = `0 0 10px ${randomColor}, 0 0 20px rgba(255, 20, 147, 0.6)`;
 
                 document.body.appendChild(textNode);
             }
